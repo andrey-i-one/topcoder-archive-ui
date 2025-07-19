@@ -3,14 +3,28 @@ import { useSearchParams } from "next/navigation";
 import React, { useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import "./styles.css";
+import Head from 'next/head'
 
 function Dashboard() {
-  const editorRef = useRef(null);
   const searchParams = useSearchParams();
-  const [queryParams, setQueryParams] = useState([]);
   const [problem, setProblem] = useState([]);
   const [state, setState] = React.useState('');
   const [result, setResult] = useState([]);
+  const [isExamplesVisible, setIsExamplesVisible] = useState(false);
+  const [isSubmitVisible, setIsSubmitVisible] = useState(false);
+  const [isResultVisible, setIsResultVisible] = useState(false);  
+
+  function toggleExamples() {
+    setIsExamplesVisible(isExamplesVisible => !isExamplesVisible);
+  }
+
+  function toggleSubmit() {
+    setIsSubmitVisible(isSubmitVisible => !isSubmitVisible);
+  }
+
+  function toggleResult() {
+    setIsResultVisible(isResultVisible => !isResultVisible);
+  }
 
   async function fetchProblem(id: string) {
     const headers: Headers = new Headers()
@@ -80,34 +94,87 @@ function Dashboard() {
   
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
-    setQueryParams(params);
     fetchProblem(params.id);
   }, [searchParams]);
 
   return (
-    <main style={{ height: "100vh" }}>
-      <div style={{ marginLeft: "10vw" }} dangerouslySetInnerHTML={{ __html: problem.statement + problem.definition + problem.constraints + problem.examples}}>
+    <main className="problem-container">
+      <Head>
+        <title>TopCoder Problem</title>
+      </Head>
+      <div style={{ marginLeft: "1vw"}}>
+        <div className="statement">
+          <h3>Problem Info</h3>
+          <div>{problem.name}</div>
+          <div>{problem.srm}</div>
+          <div>{problem.date}</div>
+          <div>{problem.author}</div>
+        </div>
       </div>
-      <Editor
-        height="90vh"
-        defaultLanguage="java"
-        defaultValue=""
-        onChange={handleEditorChange}
-      />
-      <button onClick={() => submitProblem()}>Submit</button>
-      <table>
-        <thead>
-          <tr>
-            <th>Test #</th>
-            <th>Verdict</th>
-            <th>Output</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {renderTestData()}
-        </tbody>
-      </table>
+      <div style={{ marginLeft: "1vw" }}>
+        <div className="statement">
+          <div dangerouslySetInnerHTML={{ __html: problem.statement}}></div>
+        </div>
+      </div>
+      <div style={{ marginLeft: "1vw" }}>
+        <div className="statement">
+          <div dangerouslySetInnerHTML={{ __html: problem.definition}}></div>
+        </div>
+      </div>
+      <div style={{ marginLeft: "1vw" }}>
+        <div className="statement">
+          <div dangerouslySetInnerHTML={{ __html: problem.constraints}}></div>
+        </div>
+      </div>
+      <div style={{ marginLeft: "1vw" }}>
+        <div className={isExamplesVisible ? "btn disabled" : "btn"} onClick={toggleExamples}><h3>Test Data</h3></div>
+        {isExamplesVisible && (
+          <div style={{ marginLeft: "1vw" }}>
+            <div className="statement">
+              <div dangerouslySetInnerHTML={{ __html: problem.examples}}></div>
+            </div>
+          </div>
+        )}
+      </div>
+      <div style={{ marginLeft: "1vw" }}>
+        <div className={isSubmitVisible ? "btn disabled" : "btn"} onClick={toggleSubmit}><h3>Submit</h3></div>
+        {isSubmitVisible && (
+          <div style={{ marginLeft: "1vw" }}>
+            <div className="editor">
+              <Editor
+                height="40vh"
+                defaultLanguage="java"
+                defaultValue=""
+                onChange={handleEditorChange}
+                theme="vs-dark"
+              />
+            </div>
+            <div className="submit-btn" onClick={() => submitProblem()}>Submit</div>
+          </div>
+        )}
+      </div>
+      <div style={{ marginLeft: "1vw" }}>
+        <div className="flex flex-col gap-[32px] items-center">
+          <div className={isResultVisible ? "btn disabled" : "btn"} onClick={toggleResult}><h3>Result</h3></div>
+          {isResultVisible && (
+            <div className="result">
+              <table className="result-table">
+                <thead>
+                  <tr>
+                    <th>Test #</th>
+                    <th>Verdict</th>
+                    <th>Output</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {renderTestData()}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
     </main>
   );
 }

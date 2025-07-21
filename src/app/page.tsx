@@ -182,6 +182,17 @@ export default function Archive() {
                 <option value="Dynamic">Dynamic Programming</option>
                 <option value="Math">Math</option>
                 <option value="Brute">Brute Force</option>          
+                <option value="Graph">Graph Theory</option>          
+                <option value="Sorting">Sorting</option>          
+                <option value="String Parsing">String Parsing</option>          
+                <option value="String Manipulation">String Manipulation</option>          
+                <option value="Simulation">Simulation</option>          
+                <option value="Recursion">Recursion</option>          
+                <option value="Search">Search</option>          
+                <option value="Math">Math</option>          
+                <option value="Iteration">Iteration</option>          
+                <option value="Simple">Simple Search</option>          
+                <option value="Geometry">Geometry</option>          
               </select>
             </div>
             <div className="grid-td">

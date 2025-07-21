@@ -38,12 +38,15 @@ export default function Archive() {
   const [div1LevelValue, setDiv1LevelValue] = useState('');
   const [div2LevelValue, setDiv2LevelValue] = useState('');
   const [tagValue, setTagValue] = useState('');
-  const [pageNumberValue, setPageNumberValue] = useState('0');
+  const [pageNumberValue, setPageNumberValue] = useState(0);
   const [pageSizeValue, setPageSizeValue] = useState('10');
   const [orderDirectionValue, setOrderDirectionValue] = useState('ASC');
   const [orderFieldValue, setOrderFieldValue] = useState('date');
+  const [totalPages, setTotalPages] = useState(1);
 
   async function fetchProblems() {
+    console.log(totalPages);
+    console.log(pageNumberValue);
     const headers: Headers = new Headers()
     headers.set('Accept', 'application/json')
 
@@ -63,6 +66,7 @@ export default function Archive() {
       .then(res => res.json())
       .then(res => {
         setProblems(res.data);
+        setTotalPages(res.pageInfo.totalPages);
       });
   }
 
@@ -72,9 +76,27 @@ export default function Archive() {
         })
   }
 
+  function prevPage() {
+    if(pageNumberValue > 0) {
+      setPageNumberValue(pageNumberValue - 1);
+      fetchProblems();
+    }
+  }
+
+  function nextPage() {
+    if(pageNumberValue < totalPages - 1) {
+      setPageNumberValue(pageNumberValue + 1);
+      fetchProblems();
+    }
+  }
+
+  function filterProblems() {
+    setPageNumberValue(0);
+    fetchProblems();
+  }
+
   function renderProblems() {
     if(problems) {
-      console.log(problems);
       return problems.map((value) => {
             return <tr>
               <td><Link href={{ pathname: '/problem', query: { id: value.id } }}>{value.name}</Link></td>
@@ -91,7 +113,7 @@ export default function Archive() {
 
   useEffect(() => {
     fetchProblems();
-  }, []);
+  }, [pageNumberValue]);
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] items-center">
@@ -103,7 +125,7 @@ export default function Archive() {
             <div className="grid-td">Order Field</div>
             <div className="grid-td">Tag</div>
             <div className="grid-td">Page size</div>
-            <div className="grid-td">Page number</div>
+            <div className="grid-td">Page {pageNumberValue + 1}</div>
           </div>
           <div className="grid-tr">
             <div className="grid-td">          
@@ -175,25 +197,11 @@ export default function Archive() {
               </select>
             </div>
             <div className="grid-td">
-              <select
-                name="pageNumber"
-                defaultValue={'0'}
-                multiple={false}
-                onChange={e => setPageNumberValue(e.target.value)}>
-                <option value="0">1</option>
-                <option value="1">2</option>
-                <option value="2">3</option>
-                <option value="3">4</option>          
-                <option value="4">5</option>          
-                <option value="5">6</option>          
-                <option value="6">7</option>          
-                <option value="7">8</option>          
-                <option value="8">9</option>          
-                <option value="9">10</option>          
-              </select>
+              <button onClick={() => {prevPage()}}>Prev page</button>
+              <button onClick={() => {nextPage()}}>Next page</button>
             </div>
             <div className="grid-td">
-              <button onClick={() => fetchProblems()}>Search</button>
+              <button onClick={() => filterProblems()}>Search</button>
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import "./styles.css";
 import Head from 'next/head'
+import { projectNew } from "next/dist/build/swc/generated-native";
 
 function Dashboard() {
   const searchParams = useSearchParams();
@@ -13,6 +14,7 @@ function Dashboard() {
   const [isExamplesVisible, setIsExamplesVisible] = useState(false);
   const [isSubmitVisible, setIsSubmitVisible] = useState(false);
   const [isResultVisible, setIsResultVisible] = useState(false);  
+  const [waitVisible, setWaitVisible] = useState(false);  
 
   function toggleExamples() {
     setIsExamplesVisible(isExamplesVisible => !isExamplesVisible);
@@ -53,39 +55,40 @@ function Dashboard() {
 
     console.log(state);
 
-    const request: RequestInfo = new Request('http://127.0.0.1:8080/api/compile/json', {
+    const request: RequestInfo = new Request('http://127.0.0.1:8084/api/v1/submission', {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify({language: "JAVA", sourcecode: state, memoryLimit: 500, timeLimit: 2, testCases: problem.tests})
+      body: JSON.stringify({taskId: problem.id, sources: state, tests: problem.tests})
     })
+
+    setWaitVisible(true);
+    setIsResultVisible(true);
 
     return fetch(request)
       .then(res => res.json())
       .then(res => {
         console.log(res);
+        setWaitVisible(false);
         setResult(res);
       });
   }
 
   function renderTestData() {
     let testResults = null;
-    if(problem.tests) {
-      testResults = problem.tests;
-    }
-    if(result.execution && result.execution.testCasesResult) {
-      testResults = Object.keys(result.execution.testCasesResult).map((key) => {
-        return result.execution.testCasesResult[key]
-      });
+    if(result.testsResults) {
+      testResults = result.testsResults;
     }
     console.log(testResults);
     if(testResults) {
       console.log(testResults);
       return testResults.map((value) => {
             return <tr>
-              <td>{value.id}</td>
+              <td>{value.number}</td>
               <td>{value.verdict}</td>
               <td>{value.output}</td>
-              <td>{value.executionDuration}</td>
+              <td>{value.expectedOutput}</td>
+              <td>{value.time}</td>
+              <td>{value.memory}</td>
             </tr>
           })
     }
@@ -150,6 +153,10 @@ function Dashboard() {
               />
             </div>
             <div className="submit-btn" onClick={() => submitProblem()}>Submit</div>
+            {waitVisible && (
+                <div className="info">Submission is being checked. Results will be shown soon. Please DON'T refresh the page.</div>
+              )
+            }
           </div>
         )}
       </div>
@@ -164,7 +171,9 @@ function Dashboard() {
                     <th>Test #</th>
                     <th>Verdict</th>
                     <th>Output</th>
+                    <th>Expected Output</th>
                     <th>Time</th>
+                    <th>Memory (kbytes)</th>
                   </tr>
                 </thead>
                 <tbody>

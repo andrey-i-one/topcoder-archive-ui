@@ -15,6 +15,7 @@ function Dashboard() {
   const [isSubmitVisible, setIsSubmitVisible] = useState(false);
   const [isResultVisible, setIsResultVisible] = useState(false);  
   const [waitVisible, setWaitVisible] = useState(false);  
+  const [language, setLanguage] = useState('java');
 
   function toggleExamples() {
     setIsExamplesVisible(isExamplesVisible => !isExamplesVisible);
@@ -53,12 +54,10 @@ function Dashboard() {
     headers.set('Accept', 'application/json')
     headers.set('Content-Type', 'application/json')
 
-    console.log(state);
-
     const request: RequestInfo = new Request('http://127.0.0.1:8084/api/v1/submission', {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify({taskId: problem.id, sources: state, tests: problem.tests})
+      body: JSON.stringify({taskId: problem.id, language: language, sources: state, tests: problem.tests})
     })
 
     setWaitVisible(true);
@@ -67,7 +66,6 @@ function Dashboard() {
     return fetch(request)
       .then(res => res.json())
       .then(res => {
-        console.log(res);
         setWaitVisible(false);
         setResult(res);
       });
@@ -78,9 +76,7 @@ function Dashboard() {
     if(result.testsResults) {
       testResults = result.testsResults;
     }
-    console.log(testResults);
     if(testResults) {
-      console.log(testResults);
       return testResults.map((value) => {
             return <tr>
               <td>{value.number}</td>
@@ -143,9 +139,19 @@ function Dashboard() {
         <div className={isSubmitVisible ? "btn disabled" : "btn"} onClick={toggleSubmit}><h3>Submit</h3></div>
         {isSubmitVisible && (
           <div style={{ marginLeft: "1vw" }}>
+            <div className="radio-group">
+              Language:    
+              <label><input type="radio" name="languageRadio" value="java" defaultChecked={true} 
+                onClick={e => setLanguage(e.target.value)}/>Java </label>
+              <label><input type="radio" name="languageRadio" value="csharp"  
+                onClick={e => setLanguage(e.target.value)}/>C# </label>
+              <label><input type="radio" name="languageRadio" value="cpp"  
+                onClick={e => setLanguage(e.target.value)}/>C++ </label>
+            </div>
             <div className="editor">
               <Editor
                 height="40vh"
+                language={language}
                 defaultLanguage="java"
                 defaultValue=""
                 onChange={handleEditorChange}

@@ -140,3 +140,17 @@ tfoot td {
   transition: ease background-color 250ms;
   font-family: 'Courier New', Courier, monospace;
 }
+
+.radio-group {
+  text-align: center;
+  color: rgb(12, 12, 12);
+  width: 20%;
+  padding: 5px 15px;
+  border-radius: 5px;
+  outline: 0;
+  text-transform: uppercase;
+  margin: 1vw 0vw;
+  cursor: pointer;
+  transition: ease background-color 250ms;
+  font-family: 'Courier New', Courier, monospace;
+}

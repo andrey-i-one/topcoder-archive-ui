@@ -7,9 +7,7 @@ import Head from 'next/head'
 import { projectNew } from "next/dist/build/swc/generated-native";
 
 function Dashboard() {
-
-  //let HOST = process.env.API_URL;
-  let HOST = "http://127.0.0.1:8084";
+  let HOST = process.env.API_URL;
 
   class Problem {
     id!: string;

@@ -8,10 +8,7 @@
  - API_URL - Protocol host and port, example: API_URL="http://127.0.0.1:8084"
 
 2. Build docker image:
-docker image build . -t topcoder-ui-container
+docker image build . --build-arg ENVIRONMENT=production -t topcoder-ui-container
 
 3. Run docker container
 docker run --privileged --name topcoder-ui --network=topcoder-net -p 80:3000 -d topcoder-ui-container
-
-## Deploy on Vercel
-

@@ -3,11 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import Link from "next/link";
 import "./styles.css";
+require("dotenv").config
 
 export default function Archive() {
-
-    //let HOST = process.env.API_URL;
-  let HOST = "http://127.0.0.1:8084";
+  let HOST = process.env.API_URL;
 
   interface Problem {
     id: string;

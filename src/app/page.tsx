@@ -12,6 +12,10 @@ export default function Archive() {
       key: 'name'
     },
     {
+      title: 'Author',
+      key: 'author'
+    },
+    {
       title: 'SRM',
       key: 'srm'
     },
@@ -45,12 +49,10 @@ export default function Archive() {
   const [totalPages, setTotalPages] = useState(1);
 
   async function fetchProblems() {
-    console.log(totalPages);
-    console.log(pageNumberValue);
     const headers: Headers = new Headers()
     headers.set('Accept', 'application/json')
 
-    const request: RequestInfo = new Request('http://127.0.0.1:8084/api/v1/problems?page=' + pageNumberValue + 
+    const request: RequestInfo = new Request(process.env.API_URL + '/api/v1/problems?page=' + pageNumberValue + 
       "&perPage=" + pageSizeValue + 
       "&sortField=" + orderFieldValue + 
       "&sortOrder=" + orderDirectionValue + 
@@ -100,6 +102,7 @@ export default function Archive() {
       return problems.map((value) => {
             return <tr>
               <td><Link href={{ pathname: '/problem', query: { id: value.id } }}>{value.name}</Link></td>
+              <td><a href={value.authorLink}>{value.author}</a></td>
               <td>{value.srm}</td>
               <td>{value.date}</td>
               <td>{value.tags}</td>

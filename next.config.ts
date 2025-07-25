@@ -1,7 +1,12 @@
-import type { NextConfig } from "next";
+/**
+ * @type {import('next').NextConfig}
+ */
+require("dotenv").config
 
-const nextConfig: NextConfig = {
-  /* config options here */
+const nextConfig = {
+  env: {
+    API_URL: process.env.API_URL
+  }
 };
 
 export default nextConfig;

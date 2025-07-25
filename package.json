@@ -11,6 +11,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "base-64": "^1.0.0",
+    "dotenv": "^17.2.1",
     "monaco-editor": "^0.52.2",
     "next": "15.4.1",
     "nextjs-reusable-table": "^3.5.1-legacy-final",

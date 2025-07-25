@@ -33,7 +33,7 @@ function Dashboard() {
     const headers: Headers = new Headers()
     headers.set('Accept', 'application/json')
 
-    const request: RequestInfo = new Request('http://127.0.0.1:8084/api/v1/problems/' + id, {
+    const request: RequestInfo = new Request(process.env.API_URL + '/api/v1/problems/' + id, {
       method: 'GET',
       headers: headers
     })
@@ -54,7 +54,7 @@ function Dashboard() {
     headers.set('Accept', 'application/json')
     headers.set('Content-Type', 'application/json')
 
-    const request: RequestInfo = new Request('http://127.0.0.1:8084/api/v1/submission', {
+    const request: RequestInfo = new Request(process.env.API_URL + '/api/v1/submission', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({taskId: problem.id, language: language, sources: state, tests: problem.tests})

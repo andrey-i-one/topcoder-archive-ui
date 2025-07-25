@@ -6,6 +6,26 @@ import "./styles.css";
 
 export default function Archive() {
 
+    //let HOST = process.env.API_URL;
+  let HOST = "http://127.0.0.1:8084";
+
+  interface Problem {
+    id: string;
+    tests: string;
+    name: string;
+    srm: string;
+    date: string;
+    author: string;
+    authorLink: string;
+    statement: string;
+    definition: string;
+    constraints: string;
+    examples: string;
+    tags: string;
+    div1Level: string;
+    div2Level: string;
+  }
+
   const columns = [
     {
       title: 'Name',
@@ -37,7 +57,7 @@ export default function Archive() {
     }
   ];
 
-  const [problems, setProblems] = React.useState([]);
+  const [problems, setProblems] = useState<Problem[]>([]);
 
   const [div1LevelValue, setDiv1LevelValue] = useState('');
   const [div2LevelValue, setDiv2LevelValue] = useState('');
@@ -52,7 +72,7 @@ export default function Archive() {
     const headers: Headers = new Headers()
     headers.set('Accept', 'application/json')
 
-    const request: RequestInfo = new Request(process.env.API_URL + '/api/v1/problems?page=' + pageNumberValue + 
+    const request: RequestInfo = new Request(HOST + '/api/v1/problems?page=' + pageNumberValue + 
       "&perPage=" + pageSizeValue + 
       "&sortField=" + orderFieldValue + 
       "&sortOrder=" + orderDirectionValue + 
@@ -120,7 +140,7 @@ export default function Archive() {
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] items-center">
-        <div className="grid" align="center">
+        <div className="grid">
           <div className="grid-tr">
             <div className="grid-td">Div 1 Level</div>
             <div className="grid-td">Div 2 Level</div>

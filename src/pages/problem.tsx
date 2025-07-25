@@ -7,10 +7,49 @@ import Head from 'next/head'
 import { projectNew } from "next/dist/build/swc/generated-native";
 
 function Dashboard() {
+
+  //let HOST = process.env.API_URL;
+  let HOST = "http://127.0.0.1:8084";
+
+  class Problem {
+    id!: string;
+    tests!: string;
+    name!: string;
+    srm!: string;
+    date!: string;
+    author!: string;
+    authorLink!: string;
+    statement!: string;
+    definition!: string;
+    constraints!: string;
+    examples!: string;
+  }
+
+  interface TestResult {
+    number: string;
+    verdict: string;
+    output: string;
+    expectedOutput: string;
+    time: string;
+    memory: string;
+  }
+
+  class Result {
+    id!: string;
+    testsResults!: TestResult[];
+  }
+
+  class Factory {
+    create<T>(type: (new () => T)): T {
+        return new type();
+    }
+  }
+
+  let factory = new Factory();
   const searchParams = useSearchParams();
-  const [problem, setProblem] = useState([]);
-  const [state, setState] = React.useState('');
-  const [result, setResult] = useState([]);
+  const [problem, setProblem] = useState<Problem>(factory.create(Problem));
+  const [state, setState] = useState('');
+  const [result, setResult] = useState<Result>(factory.create(Result));
   const [isExamplesVisible, setIsExamplesVisible] = useState(false);
   const [isSubmitVisible, setIsSubmitVisible] = useState(false);
   const [isResultVisible, setIsResultVisible] = useState(false);  
@@ -33,7 +72,7 @@ function Dashboard() {
     const headers: Headers = new Headers()
     headers.set('Accept', 'application/json')
 
-    const request: RequestInfo = new Request(process.env.API_URL + '/api/v1/problems/' + id, {
+    const request: RequestInfo = new Request(HOST + '/api/v1/problems/' + id, {
       method: 'GET',
       headers: headers
     })
@@ -54,7 +93,7 @@ function Dashboard() {
     headers.set('Accept', 'application/json')
     headers.set('Content-Type', 'application/json')
 
-    const request: RequestInfo = new Request(process.env.API_URL + '/api/v1/submission', {
+    const request: RequestInfo = new Request(HOST + '/api/v1/submission', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({taskId: problem.id, language: language, sources: state, tests: problem.tests})
@@ -92,8 +131,9 @@ function Dashboard() {
   }
   
   useEffect(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    fetchProblem(params.id);
+    if(searchParams) {
+      fetchProblem(Object.fromEntries(searchParams.entries()).id);
+    }
   }, [searchParams]);
 
   return (
@@ -142,11 +182,11 @@ function Dashboard() {
             <div className="radio-group">
               Language:    
               <label><input type="radio" name="languageRadio" value="java" defaultChecked={true} 
-                onClick={e => setLanguage(e.target.value)}/>Java </label>
+                onClick={e => setLanguage((e.target as HTMLInputElement).value)}/>Java </label>
               <label><input type="radio" name="languageRadio" value="csharp"  
-                onClick={e => setLanguage(e.target.value)}/>C# </label>
+                onClick={e => setLanguage((e.target as HTMLInputElement).value)}/>C# </label>
               <label><input type="radio" name="languageRadio" value="cpp"  
-                onClick={e => setLanguage(e.target.value)}/>C++ </label>
+                onClick={e => setLanguage((e.target as HTMLInputElement).value)}/>C++ </label>
             </div>
             <div className="editor">
               <Editor
